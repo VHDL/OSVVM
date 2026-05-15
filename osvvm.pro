@@ -117,7 +117,12 @@ analyze RandomPkg.vhd [NoNullRangeWarning]
 # RandomProcedurePkg is a temporary and is used by CoveragePkg
 # Likely will be replaced when VHDL-2019 support is good.
 analyze RandomProcedurePkg.vhd
-analyze CoveragePkg.vhd [NoNullRangeWarning]
+
+if {$::osvvm::ToolName ne "XSIM"}  {
+  analyze CoveragePkg.vhd [NoNullRangeWarning]
+} else {
+  analyze deprecated/CoveragePkg_xilinx.vhd [NoNullRangeWarning]
+}
 analyze CoveragePtPkg.vhd 
 analyze DelayCoveragePkg.vhd
 
