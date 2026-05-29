@@ -363,8 +363,8 @@ package CoveragePkg is
   -- /////////////////////////////////////////
   ------------------------------------------------------------
 -- AlertLogID set by NewID
---  procedure       SetAlertLogID (ID : CoverageIDType; A : AlertLogIDType) ;
---  procedure       SetAlertLogID (ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := ALERTLOG_BASE_ID ; CreateHierarchy : Boolean := TRUE) ;
+  procedure       SetAlertLogID (ID : CoverageIDType; A : AlertLogIDType) ;
+  procedure       SetAlertLogID (ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := OSVVM_COVERAGE_ALERTLOG_ID ; CreateHierarchy : Boolean := TRUE) ;
   impure function GetAlertLogID (ID : CoverageIDType) return AlertLogIDType ;
 
   ------------------------------------------------------------
@@ -544,6 +544,7 @@ package CoveragePkg is
   impure function GetMinCount (ID : CoverageIDType) return integer ;
   impure function GetMaxCov   (ID : CoverageIDType) return real ;
   impure function GetMaxCount (ID : CoverageIDType) return integer ;
+  impure function GetMaxAtLeast (ID : CoverageIDType) return integer ;
 
   ------------------------------------------------------------
   impure function CountCovHoles (ID : CoverageIDType; PercentCov : real ) return integer ;
@@ -703,7 +704,36 @@ package CoveragePkg is
   procedure AffirmIfCovered ; 
   procedure AlertIfNotCovered (Level : AlertType := ERROR) ; 
 
-  ------------------------------------------------------------
+  --------------------------------------------------------------
+  -- Start of Deprecated / Subsumed by versions with PercentCov Parameter
+  -- Maintained for backward compatibility only and
+  -- may be removed in the future.
+  -- ------------------------------------------------------------
+  impure function CountCovHoles (ID : CoverageIDType; AtLeast : integer ) return integer ;
+  impure function IsCovered (ID : CoverageIDType; AtLeast : integer ) return boolean ;
+  impure function GetRandIndex (ID : CoverageIDType; AtLeast : integer ) return integer ;
+
+  impure function GetRandBinVal (ID : CoverageIDType; AtLeast : integer ) return RangeArrayType ;
+-- Only needed in the PT API
+--    alias RandCovBinVal is GetRandBinVal[CoverageIdType, integer return RangeArrayType] ;
+--    alias RandCovHole   is GetRandBinVal[CoverageIdType, integer return RangeArrayType] ;
+
+  impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer ;
+  impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer_vector ;
+  
+  impure function GetHoleBinVal (ID : CoverageIDType; ReqHoleNum : integer ; AtLeast : integer ) return RangeArrayType ;
+-- Only needed in the PT API
+--    alias GetCovHole   is GetHoleBinVal[CoverageIdType, integer, integer return RangeArrayType] ;
+
+  procedure WriteCovHoles (ID : CoverageIDType; AtLeast : integer ) ;
+  procedure WriteCovHoles (ID : CoverageIDType; LogLevel : LogType ; AtLeast : integer ) ;
+  procedure WriteCovHoles (ID : CoverageIDType; FileName : string;  AtLeast : integer ; OpenKind : File_Open_Kind := APPEND_MODE ) ;
+  procedure WriteCovHoles (ID : CoverageIDType; LogLevel : LogType ; FileName : string;  AtLeast : integer ; OpenKind : File_Open_Kind := APPEND_MODE ) ;
+  --------------------------------------------------------------
+  -- End of Deprecated / Subsumed by versions with PercentCov Parameter
+  -- ------------------------------------------------------------
+
+------------------------------------------------------------
   -- Experimental.  Intended primarily for development.
   procedure CompareBins (
   ------------------------------------------------------------
@@ -853,11 +883,11 @@ package CoveragePkg is
 
 
   ------------------------------------------------------------------------------------------
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   ------------------------------------------------------------------------------------------
-  type CovPType is protected
+  type CoveragePType is protected
     ------------------------------------------------------------
     impure function NewID (
       Name                : String ;
@@ -931,7 +961,7 @@ package CoveragePkg is
 
     ------------------------------------------------------------
     procedure       SetAlertLogID (ID : CoverageIDType; A : AlertLogIDType) ;
-    procedure       SetAlertLogID (ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := ALERTLOG_BASE_ID ; CreateHierarchy : Boolean := TRUE) ;
+    procedure       SetAlertLogID (ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := OSVVM_COVERAGE_ALERTLOG_ID ; CreateHierarchy : Boolean := TRUE) ;
     impure function GetAlertLogID (ID : CoverageIDType) return AlertLogIDType ;
 
     ------------------------------------------------------------
@@ -1090,6 +1120,7 @@ package CoveragePkg is
     impure function GetMinCount (ID : CoverageIDType) return integer ;
     impure function GetMaxCov   (ID : CoverageIDType) return real ;
     impure function GetMaxCount (ID : CoverageIDType) return integer ;
+    impure function GetMaxAtLeast (ID : CoverageIDType) return integer ;
 
     ------------------------------------------------------------
     impure function CountCovHoles (ID : CoverageIDType; PercentCov : real ) return integer ;
@@ -1242,6 +1273,34 @@ package CoveragePkg is
     procedure RecordCovRequirements ;
     procedure SetErrorIfNotCovered(Checked : boolean := FALSE) ; 
 
+    --------------------------------------------------------------
+    -- Start of Deprecated / Subsumed by versions with PercentCov Parameter
+    -- Maintained for backward compatibility only and
+    -- may be removed in the future.
+    -- ------------------------------------------------------------
+    impure function CountCovHoles (ID : CoverageIDType; AtLeast : integer ) return integer ;
+    impure function IsCovered (ID : CoverageIDType; AtLeast : integer ) return boolean ;
+    impure function GetRandIndex (ID : CoverageIDType; AtLeast : integer ) return integer ;
+
+    impure function GetRandBinVal (ID : CoverageIDType; AtLeast : integer ) return RangeArrayType ;
+  -- Only needed in the PT API
+  --    alias RandCovBinVal is GetRandBinVal[CoverageIdType, integer return RangeArrayType] ;
+  --    alias RandCovHole   is GetRandBinVal[CoverageIdType, integer return RangeArrayType] ;
+
+    impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer ;
+    impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer_vector ;
+    
+    impure function GetHoleBinVal (ID : CoverageIDType; ReqHoleNum : integer ; AtLeast : integer ) return RangeArrayType ;
+  -- Only needed in the PT API
+  --    alias GetCovHole   is GetHoleBinVal[CoverageIdType, integer, integer return RangeArrayType] ;
+
+    procedure WriteCovHoles (ID : CoverageIDType; AtLeast : integer ) ;
+    procedure WriteCovHoles (ID : CoverageIDType; LogLevel : LogType ; AtLeast : integer ) ;
+    procedure WriteCovHoles (ID : CoverageIDType; FileName : string;  AtLeast : integer ; OpenKind : File_Open_Kind := APPEND_MODE ) ;
+    procedure WriteCovHoles (ID : CoverageIDType; LogLevel : LogType ; FileName : string;  AtLeast : integer ; OpenKind : File_Open_Kind := APPEND_MODE ) ;
+    --------------------------------------------------------------
+    -- End of Deprecated / Subsumed by versions with PercentCov Parameter
+    -- ------------------------------------------------------------
 
   ------------------------------------------------------------
   -- /////////////////////////////////////////
@@ -1272,7 +1331,7 @@ package CoveragePkg is
 
     ------------------------------------------------------------
     procedure       SetAlertLogID (A : AlertLogIDType) ;
-    procedure       SetAlertLogID (Name : string ; ParentID : AlertLogIDType := ALERTLOG_BASE_ID ; CreateHierarchy : Boolean := TRUE) ;
+    procedure       SetAlertLogID (Name : string ; ParentID : AlertLogIDType := OSVVM_COVERAGE_ALERTLOG_ID ; CreateHierarchy : Boolean := TRUE) ;
     impure function GetAlertLogID return AlertLogIDType ;
 
     ------------------------------------------------------------
@@ -1585,18 +1644,18 @@ package CoveragePkg is
     procedure AddBins (CovBin : CovMatrix8Type ; Name : String := "") ;
     procedure AddBins (CovBin : CovMatrix9Type ; Name : String := "") ;
 
-  end protected CovPType ;
+  end protected CoveragePType ;
   ------------------------------------------------------------------------------------------
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   ------------------------------------------------------------------------------------------
 
   ------------------------------------------------------------
   -- Experimental.  Intended primarily for development.
   procedure CompareBins (
   ------------------------------------------------------------
-    variable Bin1       : inout CovPType ;
-    variable Bin2       : inout CovPType ;
+    variable Bin1       : inout CoveragePType ;
+    variable Bin2       : inout CoveragePType ;
     variable ErrorCount : inout integer
   ) ;
 
@@ -1604,8 +1663,8 @@ package CoveragePkg is
   -- Experimental.  Intended primarily for development.
   procedure CompareBins (
   ------------------------------------------------------------
-    variable Bin1       : inout CovPType ;
-    variable Bin2       : inout CovPType
+    variable Bin1       : inout CoveragePType ;
+    variable Bin2       : inout CoveragePType
   ) ;
 
   ------------------------------------------------------------
@@ -2199,11 +2258,11 @@ package body CoveragePkg is
   end function GetWord ;
 
   ------------------------------------------------------------------------------------------
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   ------------------------------------------------------------------------------------------
-  type CovPType is protected body
+  type CoveragePType is protected body
     constant COV_READ_YAML_ALERT_LEVEL : AlertType := ERROR ;
 
     ------------------------------------------------------------
@@ -2894,7 +2953,7 @@ package body CoveragePkg is
     end procedure SetAlertLogID ;
 
     ------------------------------------------------------------
-    procedure SetAlertLogID(ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := ALERTLOG_BASE_ID ; CreateHierarchy : Boolean := TRUE) is
+    procedure SetAlertLogID(ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := OSVVM_COVERAGE_ALERTLOG_ID ; CreateHierarchy : Boolean := TRUE) is
     ------------------------------------------------------------
     begin
       CovStructPtr(ID.ID).AlertLogID := GetAlertLogID(Name, ParentID, CreateHierarchy) ;
@@ -3569,7 +3628,8 @@ package body CoveragePkg is
       variable MaxCov : real := 0.0 ;
     begin
       CovLoop : for i in 1 to CovStructPtr(ID.ID).NumBins loop
-        if CovStructPtr(ID.ID).CovBinPtr(i).action = COV_COUNT and CovStructPtr(ID.ID).CovBinPtr(i).PercentCov > MaxCov then
+        if  CovStructPtr(ID.ID).CovBinPtr(i).action = COV_COUNT and 
+            CovStructPtr(ID.ID).CovBinPtr(i).PercentCov > MaxCov then
           MaxCov := CovStructPtr(ID.ID).CovBinPtr(i).PercentCov ;
         end if ;
       end loop CovLoop ;
@@ -3582,12 +3642,27 @@ package body CoveragePkg is
       variable MaxCount : integer := 0 ;
     begin
       CovLoop : for i in 1 to CovStructPtr(ID.ID).NumBins loop
-        if CovStructPtr(ID.ID).CovBinPtr(i).action = COV_COUNT and CovStructPtr(ID.ID).CovBinPtr(i).Count > MaxCount then
+        if  CovStructPtr(ID.ID).CovBinPtr(i).action = COV_COUNT and 
+            CovStructPtr(ID.ID).CovBinPtr(i).Count > MaxCount then
           MaxCount := CovStructPtr(ID.ID).CovBinPtr(i).Count ;
         end if ;
       end loop CovLoop ;
       return MaxCount ;
     end function GetMaxCount ;
+
+    ------------------------------------------------------------
+    impure function GetMaxAtLeast (ID : CoverageIDType) return integer is
+    ------------------------------------------------------------
+      variable MaxAtLeast : integer := 0 ;
+    begin
+      CovLoop : for i in 1 to CovStructPtr(ID.ID).NumBins loop
+        if  CovStructPtr(ID.ID).CovBinPtr(i).action = COV_COUNT and
+            CovStructPtr(ID.ID).CovBinPtr(i).AtLeast > MaxAtLeast then
+          MaxAtLeast := CovStructPtr(ID.ID).CovBinPtr(i).AtLeast ;
+        end if ;
+      end loop CovLoop ;
+      return MaxAtLeast ;
+    end function GetMaxAtLeast ;
 
     ------------------------------------------------------------
     impure function CountCovHoles (ID : CoverageIDType; PercentCov : real ) return integer is
@@ -6477,10 +6552,18 @@ package body CoveragePkg is
 
     ------------------------------------------------------------
     -- Deprecated.  New versions use PercentCov
-    impure function RandCovBinVal (ID : CoverageIDType; AtLeast : integer ) return RangeArrayType is
+    impure function GetRandBinVal (ID : CoverageIDType; AtLeast : integer ) return RangeArrayType is
     ------------------------------------------------------------
     begin
       return CovStructPtr(ID.ID).CovBinPtr( GetRandIndex(ID, AtLeast) ).BinVal.all ;  -- GetBinVal
+    end function GetRandBinVal ;
+
+    ------------------------------------------------------------
+    -- Deprecated.  New versions use PercentCov
+    impure function RandCovBinVal (ID : CoverageIDType; AtLeast : integer ) return RangeArrayType is
+    ------------------------------------------------------------
+    begin
+      return GetRandBinVal(ID, AtLeast) ;  -- GetBinVal
     end function RandCovBinVal ;
 
 -- Maintained for backward compatibility.  Repeated until aliases work for methods
@@ -6489,12 +6572,12 @@ package body CoveragePkg is
     impure function RandCovHole (ID : CoverageIDType; AtLeast : integer ) return RangeArrayType is
     ------------------------------------------------------------
     begin
-      return RandCovBinVal(ID, AtLeast) ;  -- GetBinVal
+      return GetRandBinVal(ID, AtLeast) ;  -- GetBinVal
     end function RandCovHole ;
 
     ------------------------------------------------------------
     -- Deprecated.  New versions use PercentCov
-    impure function RandCovPoint (ID : CoverageIDType; AtLeast : integer ) return integer is
+    impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer is
     ------------------------------------------------------------
       variable BinVal : RangeArrayType(1 to 1) ;
       variable rInt   : integer ;
@@ -6503,13 +6586,28 @@ package body CoveragePkg is
 --      return RV.RandInt(BinVal(1).min, BinVal(1).max) ;
       Uniform(CovStructPtr(ID.ID).RV, rInt, BinVal(1).min, BinVal(1).max) ;
       return rInt ;
+    end function GetRandPoint ;
+
+    ------------------------------------------------------------
+    impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer_vector is
+    ------------------------------------------------------------
+    begin
+      return ToRandPoint(ID, GetRandBinVal(ID, AtLeast)) ;
+    end function GetRandPoint ;
+
+    ------------------------------------------------------------
+    -- Deprecated.  New versions use PercentCov
+    impure function RandCovPoint (ID : CoverageIDType; AtLeast : integer ) return integer is
+    ------------------------------------------------------------
+    begin
+      return GetRandPoint(ID, AtLeast) ;
     end function RandCovPoint ;
 
     ------------------------------------------------------------
     impure function RandCovPoint (ID : CoverageIDType; AtLeast : integer ) return integer_vector is
     ------------------------------------------------------------
     begin
-      return ToRandPoint(ID, RandCovBinVal(ID, AtLeast)) ;
+      return GetRandPoint(ID, AtLeast) ;
     end function RandCovPoint ;
 
     ------------------------------------------------------------
@@ -6650,7 +6748,7 @@ package body CoveragePkg is
     end procedure SetAlertLogID ;
 
     ------------------------------------------------------------
-    procedure SetAlertLogID(Name : string ; ParentID : AlertLogIDType := ALERTLOG_BASE_ID ; CreateHierarchy : Boolean := TRUE) is
+    procedure SetAlertLogID(Name : string ; ParentID : AlertLogIDType := OSVVM_COVERAGE_ALERTLOG_ID ; CreateHierarchy : Boolean := TRUE) is
     ------------------------------------------------------------
       constant SeedInit : boolean := CovStructPtr(COV_STRUCT_ID_DEFAULT.ID).RvSeedInit ;
     begin
@@ -8075,11 +8173,11 @@ package body CoveragePkg is
       AddCross(COV_STRUCT_ID_DEFAULT, CovBin, Name) ;
     end procedure AddBins ;
 
-  end protected body CovPType ;
+  end protected body CoveragePType ;
 
   ------------------------------------------------------------------------------------------
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CovPType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  --  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  CoveragePType  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   ------------------------------------------------------------------------------------------
 
   ------------------------------------------------------------
@@ -8087,7 +8185,7 @@ package body CoveragePkg is
   -- Singleton Data Structure
   -- /////////////////////////////////////////
   ------------------------------------------------------------
-  shared variable CoverageStore : CovPType ;
+  shared variable CoverageStore : CoveragePType ;
 
 
   ------------------------------------------------------------
@@ -8295,15 +8393,15 @@ package body CoveragePkg is
 
 
   ------------------------------------------------------------
---sig  procedure SetAlertLogID (ID : CoverageIDType; A : AlertLogIDType) is
---sig  begin
---sig    CoverageStore.SetAlertLogID (ID, A) ;
---sig  end procedure SetAlertLogID ;
---sig
---sig  procedure SetAlertLogID (ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := ALERTLOG_BASE_ID ; CreateHierarchy : Boolean := TRUE) is
---sig  begin
---sig    CoverageStore.SetAlertLogID (ID, Name, ParentID, CreateHierarchy) ;
---sig  end procedure SetAlertLogID ;
+  procedure SetAlertLogID (ID : CoverageIDType; A : AlertLogIDType) is
+  begin
+    CoverageStore.SetAlertLogID (ID, A) ;
+  end procedure SetAlertLogID ;
+
+  procedure SetAlertLogID (ID : CoverageIDType; Name : string ; ParentID : AlertLogIDType := OSVVM_COVERAGE_ALERTLOG_ID ; CreateHierarchy : Boolean := TRUE) is
+  begin
+    CoverageStore.SetAlertLogID (ID, Name, ParentID, CreateHierarchy) ;
+  end procedure SetAlertLogID ;
 
   impure function GetAlertLogID (ID : CoverageIDType) return AlertLogIDType is
   begin
@@ -8753,6 +8851,10 @@ package body CoveragePkg is
     return CoverageStore.GetMaxCount (ID) ;
   end function GetMaxCount ;
 
+  impure function GetMaxAtLeast (ID : CoverageIDType) return integer is
+  begin
+    return CoverageStore.GetMaxAtLeast (ID) ;
+  end function GetMaxAtLeast ;
 
   ------------------------------------------------------------
   impure function CountCovHoles (ID : CoverageIDType; PercentCov : real ) return integer is
@@ -9313,12 +9415,108 @@ package body CoveragePkg is
             TotalCov < 100.0, "TotalCov = " & to_string(TotalCov, 2), Level) ; 
   end procedure AlertIfNotCovered ; 
 
+  --------------------------------------------------------------
+  -- Start of Deprecated / Subsumed by versions with PercentCov Parameter
+  -- Maintained for backward compatibility only and
+  -- may be removed in the future.
+  -- ------------------------------------------------------------
+   ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov
+  impure function CountCovHoles (ID : CoverageIDType; AtLeast : integer ) return integer is
+  ------------------------------------------------------------
+  begin
+    return CoverageStore.CountCovHoles(ID, AtLeast) ;
+  end function CountCovHoles ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov
+  impure function IsCovered (ID : CoverageIDType; AtLeast : integer ) return boolean is
+  ------------------------------------------------------------
+  begin
+    return CoverageStore.IsCovered(ID, AtLeast) ;
+  end function IsCovered ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov
+  impure function GetRandIndex (ID : CoverageIDType; AtLeast : integer ) return integer is
+  ------------------------------------------------------------
+  begin
+    return CoverageStore.GetRandIndex(ID, AtLeast) ;  
+  end function GetRandIndex ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov
+  impure function GetRandBinVal (ID : CoverageIDType; AtLeast : integer ) return RangeArrayType is
+  ------------------------------------------------------------
+  begin
+    return CoverageStore.GetRandBinVal(ID, AtLeast) ;  
+  end function GetRandBinVal ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov
+  impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer is
+  ------------------------------------------------------------
+  begin
+    return CoverageStore.GetRandPoint(ID, AtLeast) ;
+  end function GetRandPoint ;
+
+  ------------------------------------------------------------
+  impure function GetRandPoint (ID : CoverageIDType; AtLeast : integer ) return integer_vector is
+  ------------------------------------------------------------
+  begin
+    return CoverageStore.GetRandPoint(ID, AtLeast) ;
+  end function GetRandPoint ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov
+  impure function GetHoleBinVal (ID : CoverageIDType; ReqHoleNum : integer ; AtLeast : integer ) return RangeArrayType is
+  ------------------------------------------------------------
+  begin
+    return CoverageStore.GetHoleBinVal(ID, ReqHoleNum, AtLeast) ;
+  end function GetHoleBinVal ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov.
+  procedure WriteCovHoles (ID : CoverageIDType; AtLeast : integer ) is
+  ------------------------------------------------------------
+  begin
+    CoverageStore.WriteCovHoles(ID, AtLeast) ;
+  end procedure WriteCovHoles ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov.
+  procedure WriteCovHoles (ID : CoverageIDType; LogLevel : LogType ; AtLeast : integer ) is
+  ------------------------------------------------------------
+  begin
+    CoverageStore.WriteCovHoles(ID, LogLevel, AtLeast) ;
+  end procedure WriteCovHoles ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov.
+  procedure WriteCovHoles (ID : CoverageIDType; FileName : string;  AtLeast : integer ; OpenKind : File_Open_Kind := APPEND_MODE ) is
+  ------------------------------------------------------------
+  begin
+    CoverageStore.WriteCovHoles(ID, FileName, AtLeast, OpenKind) ;
+  end procedure WriteCovHoles ;
+
+  ------------------------------------------------------------
+  -- Deprecated.  New versions use PercentCov.
+  procedure WriteCovHoles (ID : CoverageIDType; LogLevel : LogType ; FileName : string;  AtLeast : integer ; OpenKind : File_Open_Kind := APPEND_MODE ) is
+  ------------------------------------------------------------
+  begin
+    CoverageStore.WriteCovHoles(ID, LogLevel, FileName, AtLeast, OpenKind) ;
+  end procedure WriteCovHoles ;
+  --------------------------------------------------------------
+  -- End of Deprecated / Subsumed by versions with PercentCov Parameter
+  -- ------------------------------------------------------------
+
+
   ------------------------------------------------------------
   -- Experimental.  Intended primarily for development.
   procedure CompareBins (
   ------------------------------------------------------------
-    variable Bin1       : inout CovPType ;
-    variable Bin2       : inout CovPType ;
+    variable Bin1       : inout CoveragePType ;
+    variable Bin2       : inout CoveragePType ;
     variable ErrorCount : inout integer
   ) is
     variable NumBins1, NumBins2 : integer ;
@@ -9374,8 +9572,8 @@ package body CoveragePkg is
   -- Experimental.  Intended primarily for development.
   procedure CompareBins (
   ------------------------------------------------------------
-    variable Bin1       : inout CovPType ;
-    variable Bin2       : inout CovPType
+    variable Bin1       : inout CoveragePType ;
+    variable Bin2       : inout CoveragePType
   ) is
     variable ErrorCount : integer ;
     variable iAlertLogID : AlertLogIDType ;
