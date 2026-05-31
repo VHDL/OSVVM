@@ -98,7 +98,7 @@ if {$::osvvm::Supports2019AssertApi  && $::osvvm::VhdlVersion >= 2019} {
 
 analyze AlertLogPkg.vhd
 
-analyze IdFifoPtypePkg.vhd 
+analyze IdFifoPtPkg.vhd 
 
 if {$::osvvm::ToolName ne "XSIM"}  {
   analyze TbUtilPkg.vhd

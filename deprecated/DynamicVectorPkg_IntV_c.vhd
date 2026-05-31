@@ -54,7 +54,7 @@ use work.TranscriptPkg.all ;
 use work.AlertLogPkg.all ;
 use work.NameStorePkg.all ;
 use work.LanguageSupport2019Pkg.all ;
-use work.IdFifoPTypePkg.all ; 
+use work.IdFifoPtPkg.all ; 
 
 package DynamicVectorPkg_IntV is 
   -- generic (type VectorType is array (type is range <>) of type is private ) ;
